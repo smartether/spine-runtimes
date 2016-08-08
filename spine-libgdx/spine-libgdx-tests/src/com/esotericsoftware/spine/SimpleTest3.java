@@ -42,7 +42,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 public class SimpleTest3 extends ApplicationAdapter {
 	OrthographicCamera camera;
 	PolygonSpriteBatch batch;
-	SkeletonRenderer renderer;
+	SkeletonMeshRenderer renderer;
 	SkeletonRendererDebug debugRenderer;
 
 	TextureAtlas atlas;
@@ -52,14 +52,14 @@ public class SimpleTest3 extends ApplicationAdapter {
 	public void create () {
 		camera = new OrthographicCamera();
 		batch = new PolygonSpriteBatch(); // Required to render meshes. SpriteBatch can't render meshes.
-		renderer = new SkeletonRenderer();
+		renderer = new SkeletonMeshRenderer();
 		renderer.setPremultipliedAlpha(true);
 		debugRenderer = new SkeletonRendererDebug();
 		debugRenderer.setMeshTriangles(false);
 		debugRenderer.setRegionAttachments(false);
 		debugRenderer.setMeshHull(false);
 
-		atlas = new TextureAtlas(Gdx.files.internal("raptor/raptor.atlas"));
+		atlas = new TextureAtlas(Gdx.files.internal("raptor/raptor-pma.atlas"));
 		SkeletonJson json = new SkeletonJson(atlas); // This loads skeleton JSON data, which is stateless.
 		json.setScale(0.5f); // Load the skeleton at 50% the size it was in Spine.
 		SkeletonData skeletonData = json.readSkeletonData(Gdx.files.internal("raptor/raptor.json"));

@@ -49,6 +49,7 @@ public class SkeletonBounds {
 	};
 
 	public void update (Skeleton skeleton, boolean updateAabb) {
+		if (skeleton == null) throw new IllegalArgumentException("skeleton cannot be null.");
 		Array<BoundingBoxAttachment> boundingBoxes = this.boundingBoxes;
 		Array<FloatArray> polygons = this.polygons;
 		Array<Slot> slots = skeleton.slots;
@@ -67,11 +68,7 @@ public class SkeletonBounds {
 
 				FloatArray polygon = polygonPool.obtain();
 				polygons.add(polygon);
-				int vertexCount = boundingBox.getVertices().length;
-				polygon.ensureCapacity(vertexCount);
-				polygon.size = vertexCount;
-
-				boundingBox.computeWorldVertices(slot.bone, polygon.items);
+				boundingBox.computeWorldVertices(slot, polygon.setSize(boundingBox.getWorldVerticesLength()));
 			}
 		}
 
@@ -157,8 +154,9 @@ public class SkeletonBounds {
 		return inside;
 	}
 
-	/** Returns the first bounding box attachment that contains the line segment, or null. When doing many checks, it is usually
-	 * more efficient to only call this method if {@link #aabbIntersectsSegment(float, float, float, float)} returns true. */
+	/** Returns the first bounding box attachment that contains any part of the line segment, or null. When doing many checks, it
+	 * is usually more efficient to only call this method if {@link #aabbIntersectsSegment(float, float, float, float)} returns
+	 * true. */
 	public BoundingBoxAttachment intersectsSegment (float x1, float y1, float x2, float y2) {
 		Array<FloatArray> polygons = this.polygons;
 		for (int i = 0, n = polygons.size; i < n; i++)
@@ -166,7 +164,7 @@ public class SkeletonBounds {
 		return null;
 	}
 
-	/** Returns true if the polygon contains the line segment. */
+	/** Returns true if the polygon contains any part of the line segment. */
 	public boolean intersectsSegment (FloatArray polygon, float x1, float y1, float x2, float y2) {
 		float[] vertices = polygon.items;
 		int nn = polygon.size;
@@ -224,6 +222,7 @@ public class SkeletonBounds {
 
 	/** Returns the polygon for the specified bounding box, or null. */
 	public FloatArray getPolygon (BoundingBoxAttachment boundingBox) {
+		if (boundingBox == null) throw new IllegalArgumentException("boundingBox cannot be null.");
 		int index = boundingBoxes.indexOf(boundingBox, true);
 		return index == -1 ? null : polygons.get(index);
 	}

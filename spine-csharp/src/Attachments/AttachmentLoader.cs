@@ -40,9 +40,9 @@ namespace Spine {
 		MeshAttachment NewMeshAttachment (Skin skin, String name, String path);
 
 		/// <return>May be null to not load any attachment.</return>
-		SkinnedMeshAttachment NewSkinnedMeshAttachment (Skin skin, String name, String path);
-
-		/// <return>May be null to not load any attachment.</return>
 		BoundingBoxAttachment NewBoundingBoxAttachment (Skin skin, String name);
+
+		/// <returns>May be null to not load any attachment</returns>
+		PathAttachment NewPathAttachment (Skin skin, String name);
 	}
 }

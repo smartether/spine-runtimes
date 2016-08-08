@@ -71,6 +71,7 @@ public class Slot {
 	/** Sets the attachment and resets {@link #getAttachmentTime()}.
 	 * @param attachment May be null. */
 	public function set attachment (attachment:Attachment) : void {
+		if (_attachment == attachment) return;
 		_attachment = attachment;
 		_attachmentTime = _bone._skeleton.time;
 		attachmentVertices.length = 0;
@@ -85,13 +86,17 @@ public class Slot {
 		return _bone._skeleton.time - _attachmentTime;
 	}
 
-	public function setToSetupPose () : void {
-		var slotIndex:int = _bone._skeleton.data.slots.indexOf(data);
+	public function setToSetupPose () : void {		
 		r = _data.r;
 		g = _data.g;
 		b = _data.b;
 		a = _data.a;
-		attachment = _data.attachmentName == null ? null : _bone._skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+		if (_data.attachmentName == null)
+			attachment = null;
+		else {
+			_attachment = null;
+			attachment = _bone._skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName);
+		}
 	}
 
 	public function toString () : String {

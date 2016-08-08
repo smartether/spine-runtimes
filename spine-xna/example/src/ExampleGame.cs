@@ -76,7 +76,9 @@ namespace Spine {
 
 			// String name = "spineboy";
 			// String name = "goblins-mesh";
-			String name = "raptor";
+			// String name = "raptor";
+			String name = "tank";
+			// String name = "star";
 			bool binaryData = true;
 
 			Atlas atlas = new Atlas(assetsFolder + name + ".atlas", new XnaTextureLoader(GraphicsDevice));
@@ -84,6 +86,7 @@ namespace Spine {
 			float scale = 1;
 			if (name == "spineboy") scale = 0.6f;
 			if (name == "raptor") scale = 0.5f;
+			if (name == "tank") scale = 0.3f;			
 
 			SkeletonData skeletonData;
 			if (binaryData) {
@@ -116,16 +119,22 @@ namespace Spine {
 				TrackEntry entry = state.AddAnimation(0, "jump", false, 0);
 				entry.End += End; // Event handling for queued animations.
 				state.AddAnimation(0, "run", true, 0);
-			} else if (name == "raptor") {
+			}
+			else if (name == "raptor") {
 				state.SetAnimation(0, "walk", true);
-				state.SetAnimation(1, "empty", false);
 				state.AddAnimation(1, "gungrab", false, 2);
+			}
+			else if (name == "star") {
+				// no animation in star
+			}
+			else if (name == "tank") {
+				state.SetAnimation(0, "drive", true);
 			} else {
 				state.SetAnimation(0, "walk", true);
 			}
 
-			skeleton.X = 400;
-			skeleton.Y = 590;
+			skeleton.X = 400 + (name == "tank" ? 300: 0);
+			skeleton.Y = 580;
 			skeleton.UpdateWorldTransform();
 
 			headSlot = skeleton.FindSlot("head");
@@ -136,13 +145,11 @@ namespace Spine {
 		}
 
 		protected override void Update (GameTime gameTime) {
-			// Allows the game to exit
-#if !WINDOWS_STOREAPP	
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-				this.Exit();
-#endif
 			// TODO: Add your update logic here
-
+#if (!WINDOWS_STOREAPP || WINDOWS_PHONE81) && !IOS	
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+					this.Exit();
+#endif
 			base.Update(gameTime);
 		}
 
@@ -150,7 +157,7 @@ namespace Spine {
 			GraphicsDevice.Clear(Color.Black);
 
 			state.Update(gameTime.ElapsedGameTime.Milliseconds / 1000f);
-			state.Apply(skeleton);
+			state.Apply(skeleton);			
 			skeleton.UpdateWorldTransform();
 			skeletonRenderer.Begin();
 			skeletonRenderer.Draw(skeleton);

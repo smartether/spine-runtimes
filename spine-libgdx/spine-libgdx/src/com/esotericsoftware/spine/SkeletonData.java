@@ -42,6 +42,8 @@ public class SkeletonData {
 	final Array<EventData> events = new Array();
 	final Array<Animation> animations = new Array();
 	final Array<IkConstraintData> ikConstraints = new Array();
+	final Array<TransformConstraintData> transformConstraints = new Array();
+	final Array<PathConstraintData> pathConstraints = new Array();
 	float width, height;
 	String version, hash, imagesPath;
 
@@ -88,7 +90,7 @@ public class SkeletonData {
 		return null;
 	}
 
-	/** @return -1 if the bone was not found. */
+	/** @return -1 if the slot was not found. */
 	public int findSlotIndex (String slotName) {
 		if (slotName == null) throw new IllegalArgumentException("slotName cannot be null.");
 		Array<SlotData> slots = this.slots;
@@ -153,21 +155,64 @@ public class SkeletonData {
 		return null;
 	}
 
-	// --- IK
+	// --- IK constraints
 
 	public Array<IkConstraintData> getIkConstraints () {
 		return ikConstraints;
 	}
 
 	/** @return May be null. */
-	public IkConstraintData findIkConstraint (String ikConstraintName) {
-		if (ikConstraintName == null) throw new IllegalArgumentException("ikConstraintName cannot be null.");
+	public IkConstraintData findIkConstraint (String constraintName) {
+		if (constraintName == null) throw new IllegalArgumentException("constraintName cannot be null.");
 		Array<IkConstraintData> ikConstraints = this.ikConstraints;
 		for (int i = 0, n = ikConstraints.size; i < n; i++) {
-			IkConstraintData ikConstraint = ikConstraints.get(i);
-			if (ikConstraint.name.equals(ikConstraintName)) return ikConstraint;
+			IkConstraintData constraint = ikConstraints.get(i);
+			if (constraint.name.equals(constraintName)) return constraint;
 		}
 		return null;
+	}
+
+	// --- Transform constraints
+
+	public Array<TransformConstraintData> getTransformConstraints () {
+		return transformConstraints;
+	}
+
+	/** @return May be null. */
+	public TransformConstraintData findTransformConstraint (String constraintName) {
+		if (constraintName == null) throw new IllegalArgumentException("constraintName cannot be null.");
+		Array<TransformConstraintData> transformConstraints = this.transformConstraints;
+		for (int i = 0, n = transformConstraints.size; i < n; i++) {
+			TransformConstraintData constraint = transformConstraints.get(i);
+			if (constraint.name.equals(constraintName)) return constraint;
+		}
+		return null;
+	}
+
+	// --- Path constraints
+
+	public Array<PathConstraintData> getPathConstraints () {
+		return pathConstraints;
+	}
+
+	/** @return May be null. */
+	public PathConstraintData findPathConstraint (String constraintName) {
+		if (constraintName == null) throw new IllegalArgumentException("constraintName cannot be null.");
+		Array<PathConstraintData> pathConstraints = this.pathConstraints;
+		for (int i = 0, n = pathConstraints.size; i < n; i++) {
+			PathConstraintData constraint = pathConstraints.get(i);
+			if (constraint.name.equals(constraintName)) return constraint;
+		}
+		return null;
+	}
+
+	/** @return -1 if the path constraint was not found. */
+	public int findPathConstraintIndex (String pathConstraintName) {
+		if (pathConstraintName == null) throw new IllegalArgumentException("pathConstraintName cannot be null.");
+		Array<PathConstraintData> pathConstraints = this.pathConstraints;
+		for (int i = 0, n = pathConstraints.size; i < n; i++)
+			if (pathConstraints.get(i).name.equals(pathConstraintName)) return i;
+		return -1;
 	}
 
 	// ---

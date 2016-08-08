@@ -32,7 +32,6 @@
 package spine.animation {
 import spine.Event;
 import spine.Skeleton;
-import spine.Slot;
 
 public class EventTimeline implements Timeline {
 	public var frames:Vector.<Number>; // time, ...
@@ -40,7 +39,7 @@ public class EventTimeline implements Timeline {
 
 	public function EventTimeline (frameCount:int) {
 		frames = new Vector.<Number>(frameCount, true);
-		events = new Vector.<Event>(frameCount, true)
+		events = new Vector.<Event>(frameCount, true);
 	}
 
 	public function get frameCount () : int {
@@ -48,8 +47,8 @@ public class EventTimeline implements Timeline {
 	}
 
 	/** Sets the time and value of the specified keyframe. */
-	public function setFrame (frameIndex:int, time:Number, event:Event) : void {
-		frames[frameIndex] = time;
+	public function setFrame (frameIndex:int, event:Event) : void {
+		frames[frameIndex] = event.time;
 		events[frameIndex] = event;
 	}
 
@@ -64,19 +63,19 @@ public class EventTimeline implements Timeline {
 			return;
 		if (time < frames[0]) return; // Time is before first frame.
 		
-		var frameIndex:int;
+		var frame:int;
 		if (lastTime < frames[0])
-			frameIndex = 0;
+			frame = 0;
 		else {
-			frameIndex = Animation.binarySearch1(frames, lastTime);
-			var frame:Number = frames[frameIndex];
-			while (frameIndex > 0) { // Fire multiple events with the same frame.
-				if (frames[int(frameIndex - 1)] != frame) break;
-				frameIndex--;
+			frame = Animation.binarySearch1(frames, lastTime);
+			var frameTime:Number = frames[frame];
+			while (frame > 0) { // Fire multiple events with the same frame.
+				if (frames[int(frame - 1)] != frameTime) break;
+				frame--;
 			}
 		}
-		for (; frameIndex < frameCount && time >= frames[frameIndex]; frameIndex++)
-			firedEvents[firedEvents.length] = events[frameIndex];
+		for (; frame < frameCount && time >= frames[frame]; frame++)
+			firedEvents[firedEvents.length] = events[frame];
 	}
 }
 

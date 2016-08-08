@@ -35,13 +35,14 @@ using System.Collections.Generic;
 namespace Spine {
 	public class AnimationStateData {
 		internal SkeletonData skeletonData;
-		private Dictionary<KeyValuePair<Animation, Animation>, float> animationToMixTime = new Dictionary<KeyValuePair<Animation, Animation>, float>();
+		private Dictionary<AnimationPair, float> animationToMixTime = new Dictionary<AnimationPair, float>(AnimationPairComparer.Instance);
 		internal float defaultMix;
 
 		public SkeletonData SkeletonData { get { return skeletonData; } }
 		public float DefaultMix { get { return defaultMix; } set { defaultMix = value; } }
 
 		public AnimationStateData (SkeletonData skeletonData) {
+			if (skeletonData == null) throw new ArgumentException ("skeletonData cannot be null.");
 			this.skeletonData = skeletonData;
 		}
 
@@ -54,18 +55,43 @@ namespace Spine {
 		}
 
 		public void SetMix (Animation from, Animation to, float duration) {
-			if (from == null) throw new ArgumentNullException("from cannot be null.");
-			if (to == null) throw new ArgumentNullException("to cannot be null.");
-			KeyValuePair<Animation, Animation> key = new KeyValuePair<Animation, Animation>(from, to);
+			if (from == null) throw new ArgumentNullException("from", "from cannot be null.");
+			if (to == null) throw new ArgumentNullException("to", "to cannot be null.");
+			AnimationPair key = new AnimationPair(from, to);
 			animationToMixTime.Remove(key);
 			animationToMixTime.Add(key, duration);
 		}
 
 		public float GetMix (Animation from, Animation to) {
-			KeyValuePair<Animation, Animation> key = new KeyValuePair<Animation, Animation>(from, to);
+			AnimationPair key = new AnimationPair(from, to);
 			float duration;
 			if (animationToMixTime.TryGetValue(key, out duration)) return duration;
 			return defaultMix;
+		}
+
+		struct AnimationPair {
+			public readonly Animation a1;
+			public readonly Animation a2;
+
+			public AnimationPair (Animation a1, Animation a2) {
+				this.a1 = a1;
+				this.a2 = a2;
+			}
+		}
+
+		// Avoids boxing in the dictionary.
+		class AnimationPairComparer : IEqualityComparer<AnimationPair> {
+			internal static readonly AnimationPairComparer Instance = new AnimationPairComparer();
+
+			bool IEqualityComparer<AnimationPair>.Equals (AnimationPair x, AnimationPair y) {
+				return ReferenceEquals(x.a1, y.a1) && ReferenceEquals(x.a2, y.a2);
+			}
+
+			int IEqualityComparer<AnimationPair>.GetHashCode (AnimationPair obj) {
+				// from Tuple.CombineHashCodes // return (((h1 << 5) + h1) ^ h2);
+				int h1 = obj.a1.GetHashCode();
+				return (((h1 << 5) + h1) ^ obj.a2.GetHashCode());
+			}
 		}
 	}
 }

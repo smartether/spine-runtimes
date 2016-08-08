@@ -36,8 +36,11 @@ public class Event {
 	int intValue;
 	float floatValue;
 	String stringValue;
+	final float time;
 
-	public Event (EventData data) {
+	public Event (float time, EventData data) {
+		if (data == null) throw new IllegalArgumentException("data cannot be null.");
+		this.time = time;
 		this.data = data;
 	}
 
@@ -63,6 +66,10 @@ public class Event {
 
 	public void setString (String stringValue) {
 		this.stringValue = stringValue;
+	}
+
+	public float getTime () {
+		return time;
 	}
 
 	public EventData getData () {

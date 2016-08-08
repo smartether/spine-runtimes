@@ -30,7 +30,6 @@
  *****************************************************************************/
 
 package spine {
-import spine.attachments.Attachment;
 import spine.attachments.BoundingBoxAttachment;
 
 public class SkeletonBounds {
@@ -39,11 +38,13 @@ public class SkeletonBounds {
 	public var boundingBoxes:Vector.<BoundingBoxAttachment> = new Vector.<BoundingBoxAttachment>();
 	public var polygons:Vector.<Polygon> = new Vector.<Polygon>();
 	public var minX:Number, minY:Number, maxX:Number, maxY:Number;
+	
+	public function SkeletonBounds () {		
+	}
 
 	public function update (skeleton:Skeleton, updateAabb:Boolean) : void {
 		var slots:Vector.<Slot> = skeleton.slots;
-		var slotCount:int = slots.length;
-		var x:Number = skeleton.x, y:Number = skeleton.y;
+		var slotCount:int = slots.length;		
 
 		boundingBoxes.length = 0;
 		for each (var polygon:Polygon in polygons)
@@ -64,15 +65,16 @@ public class SkeletonBounds {
 				polygon = new Polygon();
 			polygons[polygons.length] = polygon;
 
-			polygon.vertices.length = boundingBox.vertices.length;
-			boundingBox.computeWorldVertices(x, y, slot.bone, polygon.vertices);
+			polygon.vertices.length = boundingBox.worldVerticesLength;
+			boundingBox.computeWorldVertices(slot, polygon.vertices);
 		}
 
 		if (updateAabb) aabbCompute();
 	}
 
 	private function aabbCompute () : void {
-		var minX:Number = int.MAX_VALUE, minY:Number = int.MAX_VALUE, maxX:Number = int.MIN_VALUE, maxY:Number = int.MIN_VALUE;
+		var minX:Number = Number.MAX_VALUE, minY:Number = Number.MAX_VALUE;
+		var maxX:Number = -Number.MAX_VALUE, maxY:Number = -Number.MAX_VALUE;
 		for (var i:int = 0, n:int = polygons.length; i < n; i++) {
 			var polygon:Polygon = polygons[i];
 			var vertices:Vector.<Number> = polygon.vertices;
